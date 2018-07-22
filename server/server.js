@@ -6,7 +6,7 @@
 require('./config/config.js');
 const express = require('express');
 const mongoose = require('mongoose');
-
+const path = require('path');
 const app = express();
 
 
@@ -16,7 +16,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
     // parse application/json
 app.use(bodyParser.json());
 
-app.use(require('./routes/usuario.js'));
+//Habilitar Public
+app.use(express.static(path.resolve(__dirname, '../public/')));
+//app.use(express.static(__dirname + '/../public/'));
+
+//Configuracion global de rutas.
+app.use(require('./routes/index.js'));
 
 mongoose.connect(process.env.URLDB, (err, res) => {
     if (err) throw err;

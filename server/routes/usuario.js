@@ -3,13 +3,17 @@
 //creado 
 //--------------------------------------------
 const express = require('express');
-const Usuario = require('../models/usuario.js');
+
 const bcrypt = require('bcrypt');
+const Usuario = require('../models/usuario.js');
+
+const { verificarToken, verificarAdminRole } = require('../middlewares/auth.js');
+
 const salRounds = 10;
 const _ = require('underscore');
 const app = express();
 
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verificarToken, function(req, res) {
     //res.json('get Usuario LOCAL');
     let skip = Number(req.query.skip) || 0;
     let limite = Number(req.query.limite) || 5;
@@ -34,7 +38,7 @@ app.get('/usuario', function(req, res) {
         });
 
 });
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificarToken, verificarAdminRole], (req, res) => {
     let body = req.body;
     let usuario = new Usuario({
         nombre: body.nombre,
@@ -58,7 +62,7 @@ app.post('/usuario', function(req, res) {
     });
 });
 
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificarToken, verificarAdminRole], function(req, res) {
     let id = req.params.id;
     let body = req.body;
     body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
@@ -78,7 +82,7 @@ app.put('/usuario/:id', function(req, res) {
     });
 
 });
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verificarToken, verificarAdminRole], function(req, res) {
     //res.json('delete Usuario');
     let id = req.params.id;
     let body = req.body;
